@@ -1,0 +1,1013 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Marhey:wght@500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <title>مولد برومبتات المخطوطات العربية</title>
+    <style>
+      :root {
+        --bg1: #fffdf8;
+        --bg2: #eef6ff;
+        --card: rgba(255, 255, 255, 0.92);
+        --text: #20314a;
+        --muted: #617287;
+        --line: #dbe6f2;
+        --gold: #c79a2b;
+        --mint: #0f8b8d;
+        --silver: #9aa6b2;
+        --shadow: 0 16px 42px rgba(24, 49, 79, 0.1);
+        --radius: 22px;
+        --active: #f4d17a;
+        --danger: #b42318;
+        --dangerbg: #fff3f2;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top right, #fff0ca 0, transparent 20%),
+          radial-gradient(circle at top left, #e8f7ef 0, transparent 18%),
+          linear-gradient(180deg, var(--bg1), var(--bg2));
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 26px 18px 44px;
+      }
+      .hero {
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 28px;
+        padding: 26px 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .site-title {
+        font-family: "Marhey", sans-serif;
+        font-weight: 600;
+        font-size: clamp(24px, 3vw, 40px);
+        line-height: 1.3;
+        color: #1e2f4d;
+        margin: 0 0 8px;
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.95;
+        font-size: 15px;
+        max-width: 1120px;
+        margin-inline: auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 1.06fr) minmax(320px, 0.94fr);
+        gap: 20px;
+        align-items: stretch;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .panel h2 {
+        margin: 0 0 16px;
+        font-size: 23px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 18px 0 12px;
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .section-title::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), var(--mint));
+        flex: 0 0 auto;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .thirds {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .full { grid-column: 1 / -1; }
+      label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      input, select, textarea {
+        width: 100%;
+        border: 1px solid #cfdae7;
+        background: #fbfdff;
+        color: var(--text);
+        border-radius: 14px;
+        padding: 12px 13px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.18s ease;
+        font-family: inherit;
+      }
+      textarea {
+        resize: vertical;
+        line-height: 1.8;
+      }
+      #promptOutput, #negativeOutput {
+        min-height: 250px;
+        white-space: pre-wrap;
+      }
+      input:focus, select:focus, textarea:focus {
+        border-color: #9ec7d8;
+        box-shadow: 0 0 0 4px rgba(15, 139, 141, 0.1);
+        background: #fff;
+      }
+      .hint {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.8;
+      }
+      .toolbar, .sub-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      button, .link-btn {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.18s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      button:hover, .link-btn:hover { transform: translateY(-1px); }
+      .primary {
+        background: linear-gradient(135deg, var(--gold), #e0ba54);
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(199, 154, 43, 0.22);
+      }
+      .secondary {
+        background: #eef7f7;
+        color: #126d70;
+        border: 1px solid #cde7e7;
+      }
+      .ghost {
+        background: #f7f9fc;
+        color: #44556d;
+        border: 1px solid #d8e1eb;
+      }
+      .danger {
+        background: #fff4f3;
+        color: var(--danger);
+        border: 1px solid #f3c3c3;
+      }
+      .link-btn {
+        background: #eef3ff;
+        color: #305f9c;
+        border: 1px solid #cfdaf1;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #0d6b6f;
+        font-weight: 700;
+        min-height: 20px;
+      }
+      .status.error {
+        color: var(--danger);
+        background: var(--dangerbg);
+        border: 1px solid #f3c3c3;
+        padding: 10px 12px;
+        border-radius: 12px;
+      }
+      .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .preset {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        background: linear-gradient(180deg, #ffffff, #f9fbfe);
+        transition: 0.18s ease;
+      }
+      .preset:hover {
+        border-color: var(--active);
+        box-shadow: 0 0 0 4px rgba(244, 209, 122, 0.17);
+        transform: translateY(-1px);
+      }
+      .preset h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      .preset p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.8;
+      }
+      .preset button {
+        width: 100%;
+        padding-block: 10px;
+      }
+      .summary {
+        background: linear-gradient(180deg, #fafdff, #f7fbff);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        line-height: 1.95;
+        color: #41546c;
+        font-size: 14px;
+      }
+      .summary b {
+        color: #1c3354;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .chip {
+        background: #fff;
+        border: 1px solid #d8e3ef;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #4b6079;
+      }
+      .note-card {
+        background: linear-gradient(180deg, #fffdf8, #f9fbff);
+        border: 1px dashed #cfdae7;
+        border-radius: 18px;
+        padding: 14px 16px;
+        color: #51667f;
+        line-height: 1.85;
+        font-size: 13px;
+      }
+      footer {
+        text-align: center;
+        padding: 22px 16px 6px;
+        line-height: 1.9;
+        color: #58708d;
+      }
+      footer a {
+        text-decoration: none;
+        color: inherit;
+      }
+      .muted-link {
+        color: #c79a2b;
+        font-weight: 700;
+      }
+      @media (max-width: 1080px) {
+        .grid { grid-template-columns: 1fr; }
+        .thirds, .fields, .preset-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="hero">
+        <h1 class="site-title">مولد برومبتات المخطوطات العربية المزخرفة</h1>
+        <p>
+          اكتب العبارة الرئيسية والاسم، ثم اختر الخامة والتأثير والزهرة والخلفية،
+          وسيولّد لك الموقع برومبت عربيًا جاهزًا مع negative prompt منفصل لنسخه
+          مباشرة إلى نانو بانانا أو أي مولد صور يدعم العربية جيدًا.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h2>إعدادات البرومبت</h2>
+
+          <div class="section-title">النصوص</div>
+          <div class="fields">
+            <div class="full">
+              <label for="mainText">العبارة الرئيسية</label>
+              <input id="mainText" value="عيد مبارك" />
+            </div>
+            <div class="full">
+              <label for="nameText">الاسم / التذييل</label>
+              <input id="nameText" value="إنسان" />
+            </div>
+          </div>
+
+          <div class="section-title">الخامة والتأثير</div>
+          <div class="thirds">
+            <div>
+              <label for="material">الخامة / اللون</label>
+              <select id="material">
+                <option value="gold" selected>ذهبي فاخر</option>
+                <option value="silver">فضي معدني</option>
+                <option value="rosegold">روز غولد</option>
+                <option value="copper">نحاسي أنيق</option>
+                <option value="chrome">كروم لامع</option>
+              </select>
+            </div>
+            <div>
+              <label for="effect">التأثير</label>
+              <select id="effect">
+                <option value="smooth" selected>معدني ناعم</option>
+                <option value="engraved">محفور</option>
+                <option value="embossed">بارز</option>
+                <option value="polished">مصقول لامع</option>
+                <option value="velvet">ناعم مخملي</option>
+              </select>
+            </div>
+            <div>
+              <label for="shine">حدة اللمعان</label>
+              <select id="shine">
+                <option value="soft" selected>ناعمة</option>
+                <option value="medium">متوسطة</option>
+                <option value="high">واضحة</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">الزهرة والتكوين</div>
+          <div class="thirds">
+            <div>
+              <label for="flowerMode">وجود الزهرة</label>
+              <select id="flowerMode">
+                <option value="integrated" selected>مدمجة مع النص</option>
+                <option value="optional">اختيارية بحسب التكوين</option>
+                <option value="none">بدون زهرة</option>
+              </select>
+            </div>
+            <div>
+              <label for="flowerType">نوع الزهرة</label>
+              <select id="flowerType">
+                <option value="free" selected>حرية كاملة للنموذج</option>
+                <option value="rose">وردة</option>
+                <option value="tulip">توليب</option>
+                <option value="lily">زنبق</option>
+                <option value="orchid">أوركيد</option>
+              </select>
+            </div>
+            <div>
+              <label for="flowerStrength">قوة الدمج</label>
+              <select id="flowerStrength">
+                <option value="subtle" selected>خفيف</option>
+                <option value="balanced">متوسط</option>
+                <option value="bold">واضح</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">التخطيط والخلفية</div>
+          <div class="thirds">
+            <div>
+              <label for="divider">الخط الفاصل</label>
+              <select id="divider">
+                <option value="yes" selected>نعم</option>
+                <option value="no">لا</option>
+              </select>
+            </div>
+            <div>
+              <label for="background">الخلفية</label>
+              <select id="background">
+                <option value="soft" selected>هادئة فاتحة</option>
+                <option value="luxury">فاخرة كريمية</option>
+                <option value="dark">داكنة راقية</option>
+                <option value="marble">رخامية ناعمة</option>
+                <option value="paper">ورق فاخر محبب</option>
+              </select>
+            </div>
+            <div>
+              <label for="strictness">صرامة النص</label>
+              <select id="strictness">
+                <option value="strict" selected>صارمة جدًا</option>
+                <option value="balanced">متوازنة</option>
+                <option value="creative">إبداعية منضبطة</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">خيارات إضافية</div>
+          <div class="fields">
+            <div>
+              <label for="layout">الترتيب</label>
+              <select id="layout">
+                <option value="centered" selected>متمركز ومتوازن</option>
+                <option value="elevated">العبارة أعلى قليلًا</option>
+                <option value="compact">مضغوط وأنيق</option>
+              </select>
+            </div>
+            <div>
+              <label for="readability">أولوية الوضوح</label>
+              <select id="readability">
+                <option value="highest" selected>أعلى أولوية</option>
+                <option value="high">عالية</option>
+                <option value="balanced">متوازنة مع الزخرفة</option>
+              </select>
+            </div>
+            <div>
+              <label for="canvas">المقاس</label>
+              <select id="canvas">
+                <option value="512">512 × 512</option>
+                <option value="1024">1024 × 1024</option>
+              </select>
+            </div>
+            <div>
+              <label for="languageMode">لغة البرومبت</label>
+              <select id="languageMode">
+                <option value="arabic" selected>عربي كامل</option>
+                <option value="bilingual">عربي مع كلمات تقنية</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">أنماط جاهزة</div>
+          <div class="preset-grid">
+            <div class="preset">
+              <h3>ذهبي مزهر</h3>
+              <p>ذهبي فاخر مع زهرة مدمجة وخلفية هادئة مناسبة للتهاني والبطاقات.</p>
+              <button class="secondary" type="button" onclick="applyPreset('goldRose')">تطبيق القالب</button>
+            </div>
+            <div class="preset">
+              <h3>فضي محفور</h3>
+              <p>خامة فضية مع تأثير حفر راقٍ وخلفية رخامية ناعمة.</p>
+              <button class="secondary" type="button" onclick="applyPreset('silverEngraved')">تطبيق القالب</button>
+            </div>
+            <div class="preset">
+              <h3>ذهبي بارز</h3>
+              <p>مخطوطة بارزة فخمة مع لمعان أوضح وخط فاصل أنيق.</p>
+              <button class="secondary" type="button" onclick="applyPreset('goldEmbossed')">تطبيق القالب</button>
+            </div>
+            <div class="preset">
+              <h3>كروم عصري</h3>
+              <p>إحساس حديث ولامع بدون زهرة، مناسب للعبارات الرسمية الأنيقة.</p>
+              <button class="secondary" type="button" onclick="applyPreset('chromeModern')">تطبيق القالب</button>
+            </div>
+          </div>
+
+          <div class="section-title">أزرار التنفيذ</div>
+          <div class="toolbar">
+            <button class="primary" type="button" onclick="generateAll()">توليد البرومبت</button>
+            <button class="secondary" type="button" onclick="copyPrompt('combined', this)">نسخ الكل</button>
+            <button class="ghost" type="button" onclick="copyPrompt('prompt', this)">نسخ البرومبت</button>
+            <button class="ghost" type="button" onclick="copyPrompt('negative', this)">نسخ Negative</button>
+            <button class="ghost" type="button" onclick="downloadPrompt()">تنزيل TXT</button>
+            <a class="link-btn" href="https://gemini.google/ye/overview/image-generation/?hl=ar-YE" target="_blank" rel="noopener noreferrer">افتح نانو بانانا</a>
+            <button class="danger" type="button" onclick="resetForm()">إعادة تعيين</button>
+          </div>
+          <div class="sub-toolbar">
+            <button class="secondary" type="button" onclick="saveSettings(this)">حفظ الإعدادات في المتصفح</button>
+            <button class="ghost" type="button" onclick="loadSavedSettings()">استعادة المحفوظ</button>
+            <button class="danger" type="button" onclick="clearSavedSettings()">حذف المحفوظ</button>
+          </div>
+          <div class="hint">سيتم تذكّر النصوص والخيارات داخل متصفح المستخدم فقط، ويمكن استعادتها تلقائيًا عند فتح الصفحة مرة أخرى.</div>
+          <div id="mainStatus" class="status"></div>
+        </div>
+
+        <div class="panel">
+          <h2>المخرجات الجاهزة</h2>
+
+          <div class="section-title">ملخص سريع</div>
+          <div id="summaryBox" class="summary"></div>
+
+          <div class="section-title">البرومبت الأساسي</div>
+          <textarea id="promptOutput" spellcheck="false"></textarea>
+
+          <div class="section-title">Negative Prompt</div>
+          <textarea id="negativeOutput" spellcheck="false"></textarea>
+
+          <div class="section-title">ملاحظات عملية</div>
+          <div class="note-card">
+            استخدم البرومبت كما هو أولًا. إذا لاحظت تكرارًا أو تخبيصًا في النص، أعد التوليد مع
+            <b>صرامة النص: صارمة جدًا</b> و<b>أولوية الوضوح: أعلى أولوية</b>. وإذا أردت حرية فنية أكبر، اختر
+            <b>إبداعية منضبطة</b> أو <b>اختيارية بحسب التكوين</b> للزهرة.
+            <div class="chips">
+              <span class="chip">النص الوحيد المسموح: العبارة + الاسم</span>
+              <span class="chip">زهرة واحدة فقط عند التفعيل</span>
+              <span class="chip">خط أفقي واحد فقط عند التفعيل</span>
+              <span class="chip">مخطوطة جرافيك رئيسية وتذييل</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const map = {
+        material: {
+          gold: {
+            ar: "ذهبي لامع فاخر",
+            tech: "luxurious gold metallic"
+          },
+          silver: {
+            ar: "فضي معدني أنيق",
+            tech: "elegant silver metallic"
+          },
+          rosegold: {
+            ar: "روز غولد ناعم",
+            tech: "soft rose gold metallic"
+          },
+          copper: {
+            ar: "نحاسي راقٍ",
+            tech: "refined copper metallic"
+          },
+          chrome: {
+            ar: "كروم حديث لامع",
+            tech: "modern polished chrome"
+          }
+        },
+        effect: {
+          smooth: {
+            ar: "بتأثير معدني ناعم ومتوازن",
+            tech: "smooth metallic finish"
+          },
+          engraved: {
+            ar: "بتأثير محفور داخل السطح بشكل واضح وأنيق",
+            tech: "engraved effect"
+          },
+          embossed: {
+            ar: "بتأثير بارز ومرتفع عن الخلفية بشكل فاخر",
+            tech: "embossed effect"
+          },
+          polished: {
+            ar: "بتأثير مصقول ولامع بانعكاس أنيق",
+            tech: "polished reflective finish"
+          },
+          velvet: {
+            ar: "بتأثير ناعم مخملي مع لمعان خفيف",
+            tech: "velvety premium finish"
+          }
+        },
+        shine: {
+          soft: { ar: "بلمعان ناعم غير مبالغ فيه", tech: "soft glow" },
+          medium: { ar: "بلمعان متوازن وواضح", tech: "balanced shine" },
+          high: { ar: "بلمعان واضح وأنيق دون مبالغة", tech: "clear elegant shine" }
+        },
+        flowerMode: {
+          integrated: { ar: "أدمج زهرة واحدة مع النص الرئيسي", tech: "integrate one single flower into the main calligraphy" },
+          optional: { ar: "يمكنك استخدام زهرة واحدة إذا خدمَت التكوين", tech: "optionally use one single flower only if it improves the composition" },
+          none: { ar: "من دون أي زهرة", tech: "without any flower" }
+        },
+        flowerType: {
+          free: { ar: "مع حرية اختيار نوع الزهرة الأنسب", tech: "free elegant flower choice" },
+          rose: { ar: "واجعلها وردة", tech: "rose" },
+          tulip: { ar: "واجعلها توليب", tech: "tulip" },
+          lily: { ar: "واجعلها زنبق", tech: "lily" },
+          orchid: { ar: "واجعلها أوركيد", tech: "orchid" }
+        },
+        flowerStrength: {
+          subtle: { ar: "ويكون الدمج خفيفًا ولطيفًا", tech: "subtle integration" },
+          balanced: { ar: "ويكون الدمج متوسطًا ومتوازنًا", tech: "balanced integration" },
+          bold: { ar: "ويكون الدمج واضحًا لكن لا يضر بوضوح النص", tech: "bold yet readable integration" }
+        },
+        divider: {
+          yes: { ar: "ضع بين العبارة والاسم خطًا أفقيًا مستقيمًا واحدًا فقط، بسيطًا وغير مزخرف", tech: "one clean straight horizontal divider" },
+          no: { ar: "لا تضف أي خط فاصل", tech: "no divider" }
+        },
+        background: {
+          soft: { ar: "خلفية هادئة فاتحة ونظيفة", tech: "soft clean light background" },
+          luxury: { ar: "خلفية فاخرة كريمية دافئة", tech: "warm luxury cream background" },
+          dark: { ar: "خلفية داكنة راقية مع تباين قوي", tech: "dark premium background with strong contrast" },
+          marble: { ar: "خلفية رخامية ناعمة وأنيقة", tech: "soft elegant marble background" },
+          paper: { ar: "خلفية تشبه الورق الفاخر المحبب", tech: "premium textured paper background" }
+        },
+        strictness: {
+          strict: { ar: "ويجب أن تكون الصياغة صارمة جدًا: النصان يظهران مرة واحدة فقط، ولا يُسمح بأي نص إضافي أو تكرار أو حروف زائدة", tech: "very strict text control" },
+          balanced: { ar: "مع انضباط واضح في النص مع مساحة فنية بسيطة", tech: "balanced text control" },
+          creative: { ar: "مع حرية فنية منضبطة دون المساس بالنص الصحيح", tech: "controlled creative freedom" }
+        },
+        layout: {
+          centered: { ar: "اجعل التكوين متمركزًا ومتوازنًا", tech: "centered balanced composition" },
+          elevated: { ar: "اجعل العبارة الرئيسية أعلى قليلًا والاسم أسفلها بتذييل أنيق", tech: "slightly elevated main text" },
+          compact: { ar: "اجعل التكوين مضغوطًا وأنيقًا مع مسافات مدروسة", tech: "compact elegant composition" }
+        },
+        readability: {
+          highest: { ar: "وضوح النص أولوية قصوى", tech: "maximum readability priority" },
+          high: { ar: "وضوح النص أولوية عالية", tech: "high readability" },
+          balanced: { ar: "وازن بين الوضوح والزخرفة", tech: "balanced readability and ornament" }
+        }
+      };
+
+      const presets = {
+        goldRose: {
+          material: "gold",
+          effect: "smooth",
+          shine: "medium",
+          flowerMode: "integrated",
+          flowerType: "free",
+          flowerStrength: "balanced",
+          divider: "yes",
+          background: "soft",
+          strictness: "strict",
+          layout: "centered",
+          readability: "highest"
+        },
+        silverEngraved: {
+          material: "silver",
+          effect: "engraved",
+          shine: "soft",
+          flowerMode: "optional",
+          flowerType: "free",
+          flowerStrength: "subtle",
+          divider: "yes",
+          background: "marble",
+          strictness: "strict",
+          layout: "centered",
+          readability: "highest"
+        },
+        goldEmbossed: {
+          material: "gold",
+          effect: "embossed",
+          shine: "high",
+          flowerMode: "integrated",
+          flowerType: "rose",
+          flowerStrength: "subtle",
+          divider: "yes",
+          background: "luxury",
+          strictness: "balanced",
+          layout: "elevated",
+          readability: "high"
+        },
+        chromeModern: {
+          material: "chrome",
+          effect: "polished",
+          shine: "high",
+          flowerMode: "none",
+          flowerType: "free",
+          flowerStrength: "subtle",
+          divider: "yes",
+          background: "dark",
+          strictness: "strict",
+          layout: "compact",
+          readability: "highest"
+        }
+      };
+
+      const STORAGE_KEY = "arabic-calligraphy-prompt-generator-settings-v1";
+      const DEFAULTS = {
+        mainText: "عيد مبارك",
+        nameText: "إنسان",
+        material: "gold",
+        effect: "smooth",
+        shine: "soft",
+        flowerMode: "integrated",
+        flowerType: "free",
+        flowerStrength: "subtle",
+        divider: "yes",
+        background: "soft",
+        strictness: "strict",
+        layout: "centered",
+        readability: "highest",
+        canvas: "512",
+        languageMode: "arabic"
+      };
+
+      const FORM_IDS = Object.keys(DEFAULTS);
+
+      function byId(id) {
+        return document.getElementById(id);
+      }
+
+      function setStatus(message, isError = false) {
+        const el = byId("mainStatus");
+        el.textContent = message;
+        el.className = isError ? "status error" : "status";
+      }
+
+      function validateFields() {
+        const mainText = byId("mainText").value.trim();
+        const nameText = byId("nameText").value.trim();
+        if (!mainText || !nameText) {
+          setStatus("يرجى تعبئة العبارة الرئيسية والاسم قبل التوليد.", true);
+          return false;
+        }
+        return true;
+      }
+
+      function valueOf(id) {
+        return byId(id).value;
+      }
+
+      function applyConfig(cfg = {}) {
+        FORM_IDS.forEach((id) => {
+          if (cfg[id] !== undefined && byId(id)) {
+            byId(id).value = cfg[id];
+          }
+        });
+      }
+
+      function getSelections() {
+        return {
+          mainText: byId("mainText").value.trim(),
+          nameText: byId("nameText").value.trim(),
+          material: valueOf("material"),
+          effect: valueOf("effect"),
+          shine: valueOf("shine"),
+          flowerMode: valueOf("flowerMode"),
+          flowerType: valueOf("flowerType"),
+          flowerStrength: valueOf("flowerStrength"),
+          divider: valueOf("divider"),
+          background: valueOf("background"),
+          strictness: valueOf("strictness"),
+          layout: valueOf("layout"),
+          readability: valueOf("readability"),
+          canvas: valueOf("canvas"),
+          languageMode: valueOf("languageMode")
+        };
+      }
+
+      function saveSettings(btn) {
+        if (!validateFields()) return;
+        try {
+          const cfg = getSelections();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+          if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = "تم الحفظ ✔";
+            setTimeout(() => {
+              btn.textContent = originalText;
+            }, 1800);
+          }
+          setStatus("تم حفظ الإعدادات داخل هذا المتصفح.");
+        } catch (error) {
+          setStatus("تعذر حفظ الإعدادات في هذا المتصفح.", true);
+        }
+      }
+
+      function loadSavedSettings(silent = false) {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            if (!silent) setStatus("لا توجد إعدادات محفوظة بعد.", true);
+            return false;
+          }
+          const saved = JSON.parse(raw);
+          applyConfig({ ...DEFAULTS, ...saved });
+          generateAll();
+          if (!silent) setStatus("تمت استعادة الإعدادات المحفوظة من المتصفح.");
+          return true;
+        } catch (error) {
+          if (!silent) setStatus("حدثت مشكلة أثناء قراءة الإعدادات المحفوظة.", true);
+          return false;
+        }
+      }
+
+      function clearSavedSettings() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          setStatus("تم حذف الإعدادات المحفوظة من هذا المتصفح.");
+        } catch (error) {
+          setStatus("تعذر حذف الإعدادات المحفوظة.", true);
+        }
+      }
+
+      function makeFlowerSentence(cfg) {
+        if (cfg.flowerMode === "none") {
+          return cfg.languageMode === "arabic"
+            ? "- من دون أي زهرة أو عنصر نباتي إضافي"
+            : "- بدون زهرة، no floral element";
+        }
+
+        const mode = map.flowerMode[cfg.flowerMode];
+        const type = map.flowerType[cfg.flowerType];
+        const strength = map.flowerStrength[cfg.flowerStrength];
+
+        if (cfg.languageMode === "arabic") {
+          return `- ${mode.ar} ${type.ar} ${strength.ar}، على أن تكون مستقيمة وغير مقلوبة، وأن تبقى جزءًا من التكوين لا عنصرًا منفصلًا`;
+        }
+
+        return `- ${mode.ar} ${type.ar} ${strength.ar}، upright natural orientation, not upside down, integrated with the calligraphy`;
+      }
+
+      function buildPrompt(cfg) {
+        const material = map.material[cfg.material];
+        const effect = map.effect[cfg.effect];
+        const shine = map.shine[cfg.shine];
+        const background = map.background[cfg.background];
+        const strictness = map.strictness[cfg.strictness];
+        const divider = map.divider[cfg.divider];
+        const layout = map.layout[cfg.layout];
+        const readability = map.readability[cfg.readability];
+        const sizeLine = cfg.canvas === "512" ? "- المقاس مربع 512×512 بكسل" : "- المقاس مربع 1024×1024 بكسل";
+        const bilingualTag = cfg.languageMode === "bilingual" ? "- الأسلوب: Arabic graphic calligraphy\n" : "";
+
+        return `أنشئ تصميماً مربعاً، بدون إطار أو حدود.
+
+${sizeLine}
+
+اكتب عبارة عربية رئيسية واحدة فقط بالنص التالي حرفياً:
+"${cfg.mainText}"
+
+ثم أضف في أسفل التصميم اسماً واحداً فقط بالنص التالي حرفياً:
+"${cfg.nameText}"
+
+شروط مهمة جداً:
+- اجعل العبارة الرئيسية والاسم كلاهما مخطوطة جرافيكية عربية فنية، وليس كتابة عادية أو خطاً مطبوعاً
+${bilingualTag}- العبارة الرئيسية تظهر مرة واحدة فقط
+- الاسم يظهر مرة واحدة فقط
+- لا تكرر أي كلمة من العبارة أو الاسم
+- لا تضف أي نص أو حروف أو زخارف كتابية إضافية
+- اجعل المخطوطتين واضحتين، أنيقتين، فاخرتين، ومقروءتين
+- لون المخطوطتين ${material.ar} ${effect.ar} ${shine.ar}
+${makeFlowerSentence(cfg)}
+- ${divider.ar}
+- اجعل الاسم أصغر من العبارة الرئيسية مع الحفاظ على الأسلوب الجرافيكي نفسه
+- ${background.ar}
+- ${layout.ar}
+- ${readability.ar}
+- التصميم بسيط، فاخر، متوازن، ومتمركز
+- التباين واضح، والمسافات مدروسة، ولا يوجد ازدحام
+- يجب أن يكون اتجاه العربية صحيحاً من اليمين إلى اليسار، مع اتصال الحروف بشكل سليم
+- حافظ على العبارة والاسم داخل مساحة آمنة مريحة
+- ${strictness.ar}
+
+النصوص الوحيدة المسموح بها في الصورة هي:
+"${cfg.mainText}"
+"${cfg.nameText}"`;
+      }
+
+      function buildNegativePrompt(cfg) {
+        const extras = [];
+        if (cfg.flowerMode === "none") extras.push("زهرة", "عنصر نباتي", "flowers", "floral elements");
+        if (cfg.divider === "no") extras.push("خط فاصل", "divider line");
+        if (cfg.effect === "engraved") extras.push("حفر مبالغ فيه", "deep harsh engraving");
+        if (cfg.effect === "embossed") extras.push("بروز مبالغ فيه", "overly thick emboss");
+
+        return [
+          "تكرار الكلمات",
+          "تكرار العبارة",
+          "تكرار الاسم",
+          "نص إضافي",
+          "حروف عربية مشوهة",
+          "حروف غير متصلة",
+          "خط غير مقروء",
+          "كتابة عادية",
+          "خط مطبوع",
+          "انعكاس أو قلب للنص",
+          "وردة مقلوبة",
+          "أكثر من زهرة",
+          "باقة ورد",
+          "عناصر كثيرة",
+          "فوضى",
+          "إطار",
+          "حدود",
+          "أكثر من خط فاصل",
+          "خط فاصل مزخرف",
+          "تشويش",
+          "جودة منخفضة",
+          "مخطوطة مجردة غير مقروءة",
+          "English text",
+          "extra text",
+          "duplicated words",
+          "mirrored text",
+          "random glyphs",
+          "watermark",
+          "logo",
+          ...extras
+        ].join("، ");
+      }
+
+      function updateSummary(cfg) {
+        const flowerSummary = cfg.flowerMode === "none"
+          ? "بدون زهرة"
+          : cfg.flowerType === "free"
+            ? "زهرة واحدة بنوع حر"
+            : `زهرة واحدة من نوع ${map.flowerType[cfg.flowerType].ar.replace('واجعلها ', '')}`;
+
+        byId("summaryBox").innerHTML = `
+          <div><b>العبارة:</b> ${escapeHtml(cfg.mainText)}</div>
+          <div><b>الاسم:</b> ${escapeHtml(cfg.nameText)}</div>
+          <div><b>الخامة:</b> ${map.material[cfg.material].ar}</div>
+          <div><b>التأثير:</b> ${map.effect[cfg.effect].ar}</div>
+          <div><b>الزهرة:</b> ${flowerSummary}</div>
+          <div><b>الخلفية:</b> ${map.background[cfg.background].ar}</div>
+          <div><b>الخط الفاصل:</b> ${cfg.divider === 'yes' ? 'مفعل' : 'غير مفعل'}</div>
+          <div><b>الوضوح:</b> ${map.readability[cfg.readability].ar}</div>
+        `;
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function generateAll() {
+        if (!validateFields()) {
+          byId("promptOutput").value = "";
+          byId("negativeOutput").value = "";
+          return;
+        }
+        const cfg = getSelections();
+        byId("promptOutput").value = buildPrompt(cfg);
+        byId("negativeOutput").value = buildNegativePrompt(cfg);
+        updateSummary(cfg);
+        setStatus("تم توليد البرومبت وـ negative prompt بنجاح.");
+      }
+
+      async function copyPrompt(mode, btn) {
+        if (!validateFields()) {
+          return;
+        }
+        if (!byId("promptOutput").value.trim()) {
+          generateAll();
+        }
+
+        const prompt = byId("promptOutput").value.trim();
+        const negative = byId("negativeOutput").value.trim();
+        let text = "";
+
+        if (mode === "prompt") text = prompt;
+        if (mode === "negative") text = negative;
+        if (mode === "combined") text = `${prompt}\n\nNegative Prompt:\n${negative}`;
+
+        if (!text) return;
+        await navigator.clipboard.writeText(text);
+
+        if (btn) {
+          const originalText = btn.textContent;
+          btn.textContent = "تم النسخ ✔";
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 1800);
+        }
+        setStatus("تم النسخ إلى الحافظة.");
+      }
+
+      function downloadPrompt() {
+        if (!validateFields()) return;
+        if (!byId("promptOutput").value.trim()) generateAll();
+        const content = `${byId("promptOutput").value.trim()}\n\nNegative Prompt:\n${byId("negativeOutput").value.trim()}`;
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "arabic-calligraphy-prompt.txt";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        setStatus("تم تنزيل ملف النص.");
+      }
+
+      function resetForm() {
+        applyConfig(DEFAULTS);
+        generateAll();
+        setStatus("تمت إعادة التعيين إلى القيم الافتراضية.");
+      }
+
+      function applyPreset(name) {
+        const preset = presets[name];
+        if (!preset) return;
+        applyConfig(preset);
+        generateAll();
+        setStatus("تم تطبيق القالب الجاهز.");
+      }
+
+      document.querySelectorAll("input, select").forEach((element) => {
+        element.addEventListener("input", generateAll);
+        element.addEventListener("change", generateAll);
+      });
+
+      if (!loadSavedSettings(true)) {
+        applyConfig(DEFAULTS);
+        generateAll();
+      } else {
+        setStatus("تمت استعادة آخر الإعدادات المحفوظة من المتصفح.");
+      }
+    </script>
+
+    <footer>
+      <div style="margin-bottom: 10px">
+        <a class="muted-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">تمت البرمجة باستخدام تشات جي بي تي</a>
+      </div>
+      <a href="https://t.me/Insan_Notebook" target="_blank" rel="noopener noreferrer">Insan_Notebook | كشكول_إنسان</a>
+    </footer>
+  </body>
+</html>
